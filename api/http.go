@@ -8,9 +8,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 
-	jsonSrial "github.com/juliocesar1235/golang-hex/serializer/json"
-	msgPSrial "github.com/juliocesar1235/golang-hex/serializer/msgpack"
-	"github.com/juliocesar1235/golang-hex/serializer/shortener"
+	jsonSerial "github.com/juliocesar1235/golang-hex/serializer/json"
+	msgPSerial "github.com/juliocesar1235/golang-hex/serializer/msgpack"
+	"github.com/juliocesar1235/golang-hex/shortener"
 )
 
 type RedirectHandler interface {
@@ -27,7 +27,7 @@ func NewHandler(redirectService shortener.RedirectService) RedirectHandler{
 }
 
 func setupResponse(w http.ResponseWriter, contentType string, body []byte, statusCode int) {
-	w.header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Type", contentType)
 	w.WriteHeader(statusCode)
 	_, err := w.Write(body)
 	if err != nil {
@@ -37,7 +37,7 @@ func setupResponse(w http.ResponseWriter, contentType string, body []byte, statu
 
 func (h *handler) serializer(contentType string) shortener.RedirectSerializer {
 	if contentType == "application/x-msgpack" {
-		return &msgPSrial.Redirect{}
+		return &msgPSerial.Redirect{}
 	}
 	return &jsonSerial.Redirect{}
 }

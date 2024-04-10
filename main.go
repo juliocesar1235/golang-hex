@@ -23,7 +23,7 @@ import (
 
 func main() {
 	repository := getRepository()
-	service := shortener.NewRedirectServiceInstance
+	service := shortener.NewRedirectServiceInstance(repository)
 	handler := apiHandler.NewHandler(service)
 
 	r := chi.NewRouter()
@@ -45,7 +45,7 @@ func main() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT)
 		errs <- fmt.Errorf("%s", <-c)
-	}
+	}()
 
 	fmt.Printf("Terminated %s", <-errs)
 }

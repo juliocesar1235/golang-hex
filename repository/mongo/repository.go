@@ -19,7 +19,7 @@ type mongoRepository struct {
 	timeout		time.Duration
 }
 
-func newMongoClient(mongoURL string, mongoTimeout int) (*mongoClient, error) {
+func newMongoClient(mongoURL string, mongoTimeout int) (*mongo.Client, error) {
 	secs := time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(mongoTimeout)*secs)
 
@@ -37,7 +37,7 @@ func newMongoClient(mongoURL string, mongoTimeout int) (*mongoClient, error) {
 
 func NewMongoRepository(mongoURL, mongoDB string, mongoTimeout int) (shortener.RedirectRepository, error) {
 	mongoRepo := &mongoRepository{
-		timeout: time.Duration(mongoTimeout) * time.Second
+		timeout: time.Duration(mongoTimeout) * time.Second,
 		database: mongoDB,
 	}
 	client, err := newMongoClient(mongoURL, mongoTimeout)
@@ -54,7 +54,7 @@ func (mRepository *mongoRepository) Find(code string) (*shortener.Redirect, erro
 	redirect := &shortener.Redirect{}
 	collection := mRepository.client.Database(mRepository.database).Collection("redirects")
 	filter := bson.M{"code": code}
-	err := collection.FindOne(ctx.filter).Decode(&redirect)
+	err := collection.FindOne(ctx,filter).Decode(&redirect)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Wrap(shortener.ErrRedirectNotFound, "repository.Redirect.Find")

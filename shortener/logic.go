@@ -1,6 +1,7 @@
 package shortener
 
 import (
+	"fmt"
 	"errors"
 	errs "github.com/pkg/errors"
 	"github.com/teris-io/shortid"
@@ -14,7 +15,7 @@ var (
 )
 
 type redirectService struct {
-	redirectRepository RedirectRepository
+	redirectRepo RedirectRepository
 }
 
 func NewRedirectServiceInstance(redirectRepo RedirectRepository) RedirectService {
@@ -24,7 +25,7 @@ func NewRedirectServiceInstance(redirectRepo RedirectRepository) RedirectService
 }
 
 func (rService *redirectService) Find(code string) (*Redirect, error) {
-	return rService.redirectRepository.Find(code)
+	return rService.redirectRepo.Find(code)
 }
 
 func (rService *redirectService) Store(redirect *Redirect) error {
@@ -32,7 +33,11 @@ func (rService *redirectService) Store(redirect *Redirect) error {
 		return errs.Wrap(ErrRedirectInvalid, "service.Redirect.Store")
 	}
 
+
+	fmt.Println("RedirectSERVICE ", redirect)
 	redirect.Code = shortid.MustGenerate()
+	fmt.Println("RedirectCODE ", redirect)
 	redirect.CreatedAt = time.Now().UTC().Unix()
-	return rService.redirectRepository.Store(redirect)
+	fmt.Println("RedirectCREATEDAT ", redirect)
+	return rService.redirectRepo.Store(redirect)
 }
